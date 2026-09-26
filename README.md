@@ -85,7 +85,7 @@ ZOHO_REDIRECT_URI=http://localhost:8000/zoho/callback/
 
 ### 2. Clone the Repository
 ```bash
-git clone <repository_url>
+git clone https://github.com/MSCRAFI/w3scloud_crm.git
 cd w3scloud_crm
 ```
 
