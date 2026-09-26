@@ -67,7 +67,7 @@ def handle_zoho_error(resp):
         body = resp.json()
     except ValueError:
         body = {}
-    code = body.get("code", "")
+    code = body.get("code") or (body.get("data", [{}])[0].get("code") if isinstance(body.get("data"), list) and len(body.get("data")) > 0 else "")
     if resp.status_code == 401:
         return JsonResponse({"error": "Token invalid/expired", "detail": body}, status=401)
     if code == "MANDATORY_NOT_FOUND":
@@ -127,7 +127,8 @@ def get_lead(request, record_id):
     token = get_valid_access_token()
     resp = requests.get(
         f"https://www.zohoapis.com/crm/v3/Leads/{record_id}",
-        headers={"Authorization": f"Zoho-oauthtoken {token}"}
+        headers={"Authorization": f"Zoho-oauthtoken {token}"},
+        params={"fields": "id,First_Name,Last_Name,Company,Email,Phone,Created_Time"}
     )
     if resp.status_code != 200:
         return handle_zoho_error(resp)

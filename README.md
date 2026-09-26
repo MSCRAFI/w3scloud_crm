@@ -173,7 +173,7 @@ GET http://127.0.0.1:8000/zoho/leads/
 
 ### 3. Insert Lead (`POST /zoho/leads/create/`)
 
-The endpoint dynamically accepts custom JSON in the request body (e.g., from Postman). If called with no body or via `GET` in a browser, it gracefully falls back to default sample values.
+The endpoint accepts a custom JSON body from Postman (or clients). If called with no body or via `GET` in a browser, it gracefully falls back to default sample values.
 
 **Request (Postman `POST`):**
 ```http
@@ -189,10 +189,25 @@ Content-Type: application/json
 }
 ```
 
+**Payload Sent to Zoho CRM v3:**
+```json
+{
+  "data": [
+    {
+      "First_Name": "John",
+      "Last_Name": "Smith",
+      "Company": "ABC Ltd",
+      "Email": "john.smith@example.com",
+      "Phone": "+8801700000000"
+    }
+  ]
+}
+```
+
 **Response (HTTP 200 OK):**
 ```json
 {
-  "created_id": "7633822000000707001"
+  "created_id": "7633822000000708001"
 }
 ```
 
@@ -201,7 +216,7 @@ Content-Type: application/json
 ### 4. Retrieve Inserted Record by ID (`GET /zoho/leads/<record_id>/`)
 **Request:**
 ```http
-GET http://127.0.0.1:8000/zoho/leads/62489000000492001/
+GET http://127.0.0.1:8000/zoho/leads/7633822000000708001/
 ```
 
 **Response (HTTP 200 OK):**
@@ -209,13 +224,13 @@ GET http://127.0.0.1:8000/zoho/leads/62489000000492001/
 {
   "data": [
     {
-      "id": "62489000000492001",
-      "First_Name": "Salman",
-      "Last_Name": "Chowdhury",
+      "id": "7633822000000708001",
+      "First_Name": "John",
+      "Last_Name": "Smith",
       "Company": "ABC Ltd",
-      "Email": "salman@example.com",
+      "Email": "john.smith@example.com",
       "Phone": "+8801700000000",
-      "Created_Time": "2026-09-26T11:20:00+06:00"
+      "Created_Time": "2026-09-26T12:46:03+06:00"
     }
   ]
 }
@@ -225,10 +240,71 @@ GET http://127.0.0.1:8000/zoho/leads/62489000000492001/
 
 ## Error Handling Demonstration
 
-The application implements `handle_zoho_error(resp)` to map and capture Zoho CRM error scenarios:
+The application implements `handle_zoho_error(resp)` to map and capture Zoho CRM error scenarios into uniform, clean JSON responses:
 
-### 1. Token Expired / Invalid (HTTP 401)
-If the token is revoked or corrupted:
+### 1. Missing Mandatory Field (HTTP 400 Bad Request)
+When attempting to insert a Lead without the required `Last_Name` field:
+
+**Request (Postman `POST`):**
+```http
+POST http://127.0.0.1:8000/zoho/leads/create/
+Content-Type: application/json
+
+{
+  "First_Name": "John",
+  "Last_Name": null,
+  "Company": "ABC Ltd"
+}
+```
+
+**Response (HTTP 400 Bad Request):**
+```json
+{
+  "error": "Missing required field",
+  "detail": {
+    "data": [
+      {
+        "code": "MANDATORY_NOT_FOUND",
+        "details": {
+          "api_name": "Last_Name",
+          "json_path": "$.data[0].Last_Name"
+        },
+        "message": "required field not found",
+        "status": "error"
+      }
+    ]
+  }
+}
+```
+
+---
+
+### 2. Invalid Record ID / URL Pattern (HTTP 400 Bad Request)
+When querying a non-existent or invalid record ID:
+
+**Request:**
+```http
+GET http://127.0.0.1:8000/zoho/leads/9999999999999999999/
+```
+
+**Response (HTTP 400 Bad Request):**
+```json
+{
+  "error": "Zoho API error",
+  "detail": {
+    "code": "INVALID_URL_PATTERN",
+    "message": "Please check if the URL trying to access is a correct one",
+    "status": "error"
+  }
+}
+```
+
+---
+
+### 3. Token Expired / Invalid (HTTP 401 Unauthorized)
+If an access token is revoked, invalid, or expired:
+
+**Response (HTTP 401 Unauthorized):**
 ```json
 {
   "error": "Token invalid/expired",
@@ -240,22 +316,12 @@ If the token is revoked or corrupted:
 }
 ```
 
-### 2. Missing Mandatory Field (HTTP 400)
-When attempting to insert a Lead without `Last_Name`:
-```json
-{
-  "error": "Missing required field",
-  "detail": {
-    "code": "MANDATORY_NOT_FOUND",
-    "details": { "api_name": "Last_Name" },
-    "message": "required field not found",
-    "status": "error"
-  }
-}
-```
+---
 
-### 3. Invalid Module Name (HTTP 400)
-When targeting an invalid or disabled module:
+### 4. Invalid Module Name (HTTP 400 Bad Request)
+When targeting an invalid or disabled CRM module:
+
+**Response (HTTP 400 Bad Request):**
 ```json
 {
   "error": "Invalid module name",
