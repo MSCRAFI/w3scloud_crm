@@ -1,0 +1,18 @@
+# Environment variables
+.env
+
+# Virtual environments
+venv/
+env/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+*.sqlite3
+db.sqlite3-journal
+
+# Logs
+*.log
