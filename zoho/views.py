@@ -1,9 +1,11 @@
+import json
 import os
 import requests
 from datetime import timedelta
 from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from .models import ZohoToken
 
 
@@ -87,15 +89,29 @@ def list_leads(request):
     return JsonResponse({"leads": resp.json().get("data", [])})
 
 
+@csrf_exempt
 def create_lead(request):
     token = get_valid_access_token()
-    payload = {"data": [{
+    lead_data = {
         "First_Name": "Salman",
         "Last_Name": "Chowdhury",
         "Company": "ABC Ltd",
         "Email": "john@example.com",
         "Phone": "+8801XXXXXXXXX"
-    }]}
+    }
+
+    if request.body:
+        try:
+            body = json.loads(request.body)
+            if isinstance(body, dict):
+                if "data" in body and isinstance(body["data"], list) and len(body["data"]) > 0:
+                    lead_data.update(body["data"][0])
+                else:
+                    lead_data.update(body)
+        except Exception:
+            pass
+
+    payload = {"data": [lead_data]}
     resp = requests.post(
         "https://www.zohoapis.com/crm/v3/Leads",
         headers={"Authorization": f"Zoho-oauthtoken {token}", "Content-Type": "application/json"},

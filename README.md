@@ -135,7 +135,7 @@ The server will start at `http://127.0.0.1:8000/`.
 | `GET` | `/zoho/login/` | Initiates Zoho OAuth 2.0 consent flow |
 | `GET` | `/zoho/callback/` | Handles OAuth redirect, exchanges code for tokens, saves to DB |
 | `GET` | `/zoho/leads/` | Retrieves leads list (Record ID, Name, Email, Phone) |
-| `GET`/`POST` | `/zoho/leads/create/` | Creates a new Lead in Zoho CRM |
+| `POST` / `GET` | `/zoho/leads/create/` | Creates a new Lead in Zoho CRM (accepts custom JSON body or falls back to sample defaults) |
 | `GET` | `/zoho/leads/<record_id>/` | Retrieves a specific Lead by Record ID |
 
 ---
@@ -160,9 +160,9 @@ GET http://127.0.0.1:8000/zoho/leads/
 {
   "leads": [
     {
-      "id": "62489000000492001",
-      "Last_Name": "Chowdhury",
-      "Email": "salman@example.com",
+      "id": "7633822000000707001",
+      "Last_Name": "Smith",
+      "Email": "john.smith@example.com",
       "Phone": "+8801700000000"
     }
   ]
@@ -171,31 +171,28 @@ GET http://127.0.0.1:8000/zoho/leads/
 
 ---
 
-### 3. Insert Lead (`GET /zoho/leads/create/`)
-**Request:**
-```http
-GET http://127.0.0.1:8000/zoho/leads/create/
-```
+### 3. Insert Lead (`POST /zoho/leads/create/`)
 
-**Payload sent to Zoho CRM v3:**
-```json
+The endpoint dynamically accepts custom JSON in the request body (e.g., from Postman). If called with no body or via `GET` in a browser, it gracefully falls back to default sample values.
+
+**Request (Postman `POST`):**
+```http
+POST http://127.0.0.1:8000/zoho/leads/create/
+Content-Type: application/json
+
 {
-  "data": [
-    {
-      "First_Name": "Salman",
-      "Last_Name": "Chowdhury",
-      "Company": "ABC Ltd",
-      "Email": "salman@example.com",
-      "Phone": "+8801700000000"
-    }
-  ]
+  "First_Name": "John",
+  "Last_Name": "Smith",
+  "Company": "ABC Ltd",
+  "Email": "john.smith@example.com",
+  "Phone": "+8801700000000"
 }
 ```
 
 **Response (HTTP 200 OK):**
 ```json
 {
-  "created_id": "62489000000492001"
+  "created_id": "7633822000000707001"
 }
 ```
 
