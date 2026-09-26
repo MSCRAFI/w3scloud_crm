@@ -1,13 +1,8 @@
-# W3SCLOUD Technical Assessment — Zoho CRM API Integration
+# Zoho CRM API Integration
 
-**Position:** Software Developer | W3SCLOUD  
-**Stack:** Python 3, Django 5, SQLite, Requests, python-dotenv  
-**Candidate Submission Details:**
-- **Candidate Name:** *[Your Name]*
-- **GitHub Repository:** *[Repository URL / ZIP]*
-- **Demo Video Link:** *[Loom / YouTube / Drive Link]*
-- **AI Tools Used:** Claude AI, GitHub Copilot, Google Antigravity
-- **Submission Date:** *[Submission Date]*
+A production-ready Django integration with **Zoho CRM v3 APIs**. Built with dynamic OAuth 2.0 authentication, offline token refresh, full CRUD capabilities for leads, and comprehensive error handling.
+
+**Tech Stack:** Python 3, Django 5, SQLite, Requests, python-dotenv
 
 ---
 
@@ -20,14 +15,14 @@
 6. [API Endpoints & Usage](#api-endpoints--usage)
 7. [Example Requests & Responses](#example-requests--responses)
 8. [Error Handling Demonstration](#error-handling-demonstration)
-9. [Part 2: Ten Technical Questions & Answers](#part-2-ten-technical-questions--answers)
-10. [Part 4: AI Usage Disclosure](#part-4-ai-usage-disclosure)
+9. [Technical Deep-Dive & Architecture](#technical-deep-dive--architecture)
+10. [AI Tools & Development Notes](#ai-tools--development-notes)
 
 ---
 
 ## Project Overview
 
-This project is an end-to-end integration between a backend service and **Zoho CRM v3 APIs**, developed for the **W3SCLOUD Software Developer Technical Assessment**. 
+This project provides an end-to-end integration between a Django backend service and **Zoho CRM v3 APIs**. 
 
 The system implements a production-grade OAuth 2.0 authorization code flow (with offline token refresh handling), record retrieval, record insertion, record lookup by ID, and centralized error handling for Zoho API response states.
 
@@ -277,7 +272,7 @@ When targeting an invalid or disabled module:
 
 ---
 
-## Part 2: Ten Technical Questions & Answers
+## Technical Deep-Dive & Architecture
 
 ### Q1. OAuth — Explain Client ID, Client Secret, Access Token, and Refresh Token, and how they are used in an API integration.
 - **Client ID:** A unique public identifier assigned to the application by Zoho Developer Console. Identifies which client is initiating the request.
@@ -399,7 +394,7 @@ When targeting an invalid or disabled module:
 
 ---
 
-### Q10. W3SCLOUD Scenario — Design External Website ➔ Node.js API ➔ Zoho CRM for `{ name: 'John Smith', email: 'john@example.com', company: 'ABC Ltd', phone: '+8801XXXXXXXXX' }`.
+### Q10. End-to-End Integration Scenario — Design External Website ➔ Node.js API ➔ Zoho CRM for `{ name: 'John Smith', email: 'john@example.com', company: 'ABC Ltd', phone: '+8801XXXXXXXXX' }`.
 ```
 [ External Website ]
        │  (HTTPS POST /api/v1/leads + API Key / Recaptcha)
@@ -426,9 +421,9 @@ When targeting an invalid or disabled module:
 
 ---
 
-## Part 4: AI Usage Disclosure
+## AI Tools & Development Notes
 
-In compliance with **Part 4 of the W3SCLOUD Assessment Guidelines** ("*state which tool was used, what it helped with, what you changed, and what problems you solved*"):
+Overview of AI tools utilized during development:
 
 ### 1. Claude AI (Anthropic)
 - **What it helped with:** Figuring out the Zoho CRM v3 API documentation, OAuth 2.0 authorization code flow requirements, and drafting the initial structure for the Django views (`zoho_login`, `zoho_callback`, `list_leads`, `create_lead`, `get_lead`, and `handle_zoho_error`).
